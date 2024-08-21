@@ -1,11 +1,17 @@
-package lk.ijse.ptobackend;
+package lk.ijse.ptobackend.controller;
 
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
+import jakarta.json.bind.JsonbException;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lk.ijse.ptobackend.bo.BOFactory;
+import lk.ijse.ptobackend.bo.custom.CustomerBO;
+import lk.ijse.ptobackend.dto.CustomerDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +25,9 @@ import java.sql.SQLException;
 @WebServlet(urlPatterns = "/customerController")
 public class CustomerController extends HttpServlet {
 
+    private Connection connection;
     static Logger logger = LoggerFactory.getLogger(CustomerController.class);
-    Connection connection;
+    CustomerBO customerBO = (CustomerBO) BOFactory.getBoFactory().getBO(BOFactory.BOTypes.CUSTOMERS);
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -37,6 +44,26 @@ public class CustomerController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Save Details*/
+        if (!req.getContentType().toLowerCase().startsWith("application/json") || req.getContentType() == null) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+        try(var writer = resp.getWriter()) {
+            Jsonb jsonb = JsonbBuilder.create();
+            CustomerDTO customerDTO = jsonb.fromJson(req.getReader(), CustomerDTO.class);
+
+            boolean iSaved = customerBO.saveCustomer(customerDTO, connection);
+            if (iSaved) {
+                writer.write("Customer saved successfully");
+                resp.setStatus(HttpServletResponse.SC_CREATED);
+            } else {
+                writer.write(" Something went wrong Customer did not saved successfully");
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        } catch (JsonbException | SQLException e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
