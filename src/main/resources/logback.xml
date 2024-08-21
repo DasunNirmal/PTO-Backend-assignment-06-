@@ -7,7 +7,7 @@
     </appender>
 
     <appender name="File" class="ch.qos.logback.core.FileAppender"> <!--File appender os there to print the log on to a File named app.log-->
-        <file>/home/dasunnirmal/IdeaProjects/StudentManagementSystemWithJEE/app.log</file>
+        <file>/home/dasunnirmal/IdeaProjects/PTO-Backend/app.log</file>
         <append>true</append>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%kvp- %msg%n</pattern>
