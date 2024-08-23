@@ -1,20 +1,25 @@
 package lk.ijse.ptobackend.dao.custom.impl;
 
 import lk.ijse.ptobackend.dao.custom.CustomerDAO;
+import lk.ijse.ptobackend.dto.CustomerDTO;
 import lk.ijse.ptobackend.entity.Customer;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerDAOImpl implements CustomerDAO {
 
-    static String SAVE_STUDENT = "INSERT INTO Customer VALUES (?,?,?,?)";
+    static String SAVE_CUSTOMERS = "INSERT INTO Customer VALUES (?,?,?,?)";
+    static String GET_ALL_CUSTOMERS = "SELECT * FROM Customer";
 
     @Override
     public boolean save(Customer customer, Connection connection) throws SQLException {
         try {
-            var ps = connection.prepareStatement(SAVE_STUDENT);
+            var ps = connection.prepareStatement(SAVE_CUSTOMERS);
             ps.setString(1, customer.getCustomerID());
             ps.setString(2, customer.getCustomerName());
             ps.setString(3, customer.getCustomerAddress());
@@ -28,7 +33,19 @@ public class CustomerDAOImpl implements CustomerDAO {
 
     @Override
     public List<Customer> getAll(Connection connection) throws SQLException {
-        return List.of();
+        var ps = connection.prepareStatement(GET_ALL_CUSTOMERS);
+        var resultSet = ps.executeQuery();
+        List<Customer> customerList = new ArrayList<>();
+        while (resultSet.next()){
+            Customer customers = new Customer(
+                    resultSet.getString("customerID"),
+                    resultSet.getString("customerName"),
+                    resultSet.getString("customerAddress"),
+                    resultSet.getString("customerPhoneNumber")
+            );
+            customerList.add(customers);
+        }
+        return customerList;
     }
 
     @Override
