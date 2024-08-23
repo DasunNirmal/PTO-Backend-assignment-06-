@@ -2,3 +2,14 @@
 16:56:24.561 [http-nio-8081-exec-1] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
 17:01:28.292 [http-nio-8081-exec-1] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
 17:03:32.082 [http-nio-8081-exec-1] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
+20:56:41.069 [http-nio-8081-exec-1] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
+21:08:33.400 [http-nio-8081-exec-2] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
+21:14:03.142 [http-nio-8081-exec-1] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
+21:17:55.651 [http-nio-8081-exec-2] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
+21:22:59.189 [http-nio-8081-exec-1] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
+21:27:22.827 [http-nio-8081-exec-1] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
+21:31:34.187 [http-nio-8081-exec-1] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
+21:36:53.801 [http-nio-8081-exec-2] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
+12:04:21.075 [http-nio-8081-exec-1] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
+12:09:04.407 [http-nio-8081-exec-1] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
+15:36:18.962 [http-nio-8081-exec-1] INFO  l.i.p.controller.CustomerController -- Initializing CustomerController with calling init method
