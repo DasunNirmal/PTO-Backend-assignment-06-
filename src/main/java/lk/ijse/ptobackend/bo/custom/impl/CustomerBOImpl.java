@@ -34,4 +34,10 @@ public class CustomerBOImpl implements CustomerBO {
     public boolean deleteCustomer(String customerID, Connection connection) throws SQLException {
         return customerDAO.delete(customerID,connection);
     }
+
+    @Override
+    public boolean updateCustomer(String customerID, CustomerDTO customerDTO, Connection connection) throws SQLException {
+        return customerDAO.update(customerID,
+                new Customer(customerDTO.getCustomerID(), customerDTO.getCustomerName(), customerDTO.getCustomerAddress(), customerDTO.getCustomerPhoneNumber()), connection);
+    }
 }
