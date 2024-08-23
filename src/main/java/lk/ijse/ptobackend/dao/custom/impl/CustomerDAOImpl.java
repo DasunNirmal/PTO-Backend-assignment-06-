@@ -15,6 +15,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 
     static String SAVE_CUSTOMERS = "INSERT INTO Customer VALUES (?,?,?,?)";
     static String GET_ALL_CUSTOMERS = "SELECT * FROM Customer";
+    static String DELETE_CUSTOMERS = "DELETE FROM Customer WHERE customerID = ?";
 
     @Override
     public boolean save(Customer customer, Connection connection) throws SQLException {
@@ -55,6 +56,12 @@ public class CustomerDAOImpl implements CustomerDAO {
 
     @Override
     public boolean delete(String id, Connection connection) throws SQLException {
-        return false;
+        try {
+            var ps = connection.prepareStatement(DELETE_CUSTOMERS);
+            ps.setString(1, id);
+            return ps.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
     }
 }
