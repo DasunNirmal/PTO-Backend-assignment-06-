@@ -29,4 +29,9 @@ public class CustomerBOImpl implements CustomerBO {
         }
         return customerDTOS;
     }
+
+    @Override
+    public boolean deleteCustomer(String customerID, Connection connection) throws SQLException {
+        return customerDAO.delete(customerID,connection);
+    }
 }
