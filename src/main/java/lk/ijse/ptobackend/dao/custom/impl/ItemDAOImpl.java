@@ -12,7 +12,9 @@ public class ItemDAOImpl implements ItemDAO {
 
     static String SAVE_ITEMS = "INSERT INTO Items VALUES (?,?,?,?)";
     static String GET_ALL_ITEMS = "SELECT * FROM Items";
+    static String DELETE_ITEMS = "DELETE FROM Items WHERE itemID = ?";
     static String UPDATE_ITEMS = "UPDATE Items SET itemName = ?, itemPrice = ?, itemQty = ? WHERE itemID = ?";
+    static String SEARCH_ITEMS = "SELECT * FROM Items WHERE itemID = ?";
 
     @Override
     public boolean save(Item item, Connection connection) throws SQLException {
@@ -62,11 +64,29 @@ public class ItemDAOImpl implements ItemDAO {
 
     @Override
     public boolean delete(String id, Connection connection) throws SQLException {
-        return false;
+        try {
+            var ps = connection.prepareStatement(DELETE_ITEMS);
+            ps.setString(1, id);
+            return ps.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
     }
 
     @Override
     public Item search(String id, Connection connection) throws SQLException {
-        return null;
+        Item item = null;
+        var ps = connection.prepareStatement(SEARCH_ITEMS);
+        ps.setString(1, id);
+        var resultSet = ps.executeQuery();
+        while (resultSet.next()) {
+            String itemID = resultSet.getString("itemID");
+            String itemName = resultSet.getString("itemName");
+            double itemPrice = resultSet.getDouble("itemPrice");
+            int itemQty = resultSet.getInt("itemQty");
+
+            item = new Item(itemID, itemName, itemPrice, itemQty);
+        }
+        return item;
     }
 }
