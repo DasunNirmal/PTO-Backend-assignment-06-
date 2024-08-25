@@ -40,4 +40,14 @@ public class CustomerBOImpl implements CustomerBO {
         return customerDAO.update(customerID,
                 new Customer(customerDTO.getCustomerID(), customerDTO.getCustomerName(), customerDTO.getCustomerAddress(), customerDTO.getCustomerPhoneNumber()), connection);
     }
+
+    @Override
+    public CustomerDTO searchCustomerByID(String customerID, Connection connection) throws SQLException {
+        Customer customer = customerDAO.search(customerID,connection);
+        if (customer != null) {
+            return new CustomerDTO(customer.getCustomerID(), customer.getCustomerName(), customer.getCustomerAddress(), customer.getCustomerPhoneNumber());
+        } else {
+            return null;
+        }
+    }
 }
