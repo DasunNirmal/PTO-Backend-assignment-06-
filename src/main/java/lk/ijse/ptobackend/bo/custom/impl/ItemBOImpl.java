@@ -21,7 +21,7 @@ public class ItemBOImpl implements ItemBO {
     }
 
     @Override
-    public List<ItemDTO> getAllCustomers(Connection connection) throws SQLException {
+    public List<ItemDTO> getAllItems(Connection connection) throws SQLException {
         List<ItemDTO> itemDTOS = new ArrayList<>();
         List<Item> items = itemDAO.getAll(connection);
         for (Item item : items) {
@@ -31,7 +31,22 @@ public class ItemBOImpl implements ItemBO {
     }
 
     @Override
-    public boolean updateCustomer(String customerID, ItemDTO itemDTO, Connection connection) throws SQLException {
+    public boolean updateItem(String customerID, ItemDTO itemDTO, Connection connection) throws SQLException {
         return itemDAO.update(customerID, new Item(itemDTO.getItemID(), itemDTO.getItemName(), itemDTO.getItemPrice(), itemDTO.getItemQty()), connection);
+    }
+
+    @Override
+    public boolean deleteItem(String itemID, Connection connection) throws SQLException {
+        return itemDAO.delete(itemID,connection);
+    }
+
+    @Override
+    public ItemDTO searchItem(String itemID, Connection connection) throws SQLException {
+        Item item = itemDAO.search(itemID,connection);
+        if (item != null) {
+            return new ItemDTO(item.getItemID(), item.getItemName(), item.getItemPrice(), item.getItemQty());
+        } else {
+            return null;
+        }
     }
 }
