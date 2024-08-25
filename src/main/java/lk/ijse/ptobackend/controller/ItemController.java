@@ -93,7 +93,24 @@ public class ItemController extends HttpServlet {
     @Override
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Update Details*/
-        super.doPatch(req, resp);
+        if (!req.getContentType().toLowerCase().startsWith("application/json") || req.getContentType() == null) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+        try(var writer = resp.getWriter()) {
+            var customerID = req.getParameter("itemID");
+            Jsonb jsonb = JsonbBuilder.create();
+            ItemDTO itemDTO = jsonb.fromJson(req.getReader(), ItemDTO.class);
+            boolean isUpdated = itemBO.updateCustomer(customerID, itemDTO, connection);
+            if (isUpdated) {
+                resp.getWriter().write("Item updated successfully");
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
+                writer.write("Something went wrong Item did not updated successfully");
+            }
+        } catch (JsonbException | SQLException e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
