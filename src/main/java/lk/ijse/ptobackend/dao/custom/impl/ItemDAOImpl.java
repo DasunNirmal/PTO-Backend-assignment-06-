@@ -1,4 +1,64 @@
 package lk.ijse.ptobackend.dao.custom.impl;
 
-public class ItemDAOImpl {
+import lk.ijse.ptobackend.dao.custom.ItemDAO;
+import lk.ijse.ptobackend.entity.Item;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ItemDAOImpl implements ItemDAO {
+
+    static String SAVE_ITEMS = "INSERT INTO Items VALUES (?,?,?,?)";
+    static String GET_ALL_ITEMS = "SELECT * FROM Items";
+
+    @Override
+    public boolean save(Item item, Connection connection) throws SQLException {
+        try {
+            var ps = connection.prepareStatement(SAVE_ITEMS);
+            ps.setString(1, item.getItemID());
+            ps.setString(2, item.getItemName());
+            ps.setDouble(3, item.getItemPrice());
+            ps.setInt(4, item.getItemQty());
+
+            return ps.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+    }
+
+    @Override
+    public List<Item> getAll(Connection connection) throws SQLException {
+        var ps = connection.prepareStatement(GET_ALL_ITEMS);
+        var resultSet = ps.executeQuery();
+        List<Item> itemsList = new ArrayList<>();
+        while (resultSet.next()) {
+            Item item = new Item(
+                    resultSet.getString("itemID"),
+                    resultSet.getString("itemName"),
+                    resultSet.getDouble("itemPrice"),
+                    resultSet.getInt("itemQty")
+            );
+            itemsList.add(item);
+        }
+        return itemsList;
+    }
+
+    @Override
+    public boolean update(String id, Item dto, Connection connection) throws SQLException {
+        return false;
+    }
+
+    @Override
+    public boolean delete(String id, Connection connection) throws SQLException {
+        return false;
+    }
+
+    @Override
+    public Item search(String id, Connection connection) throws SQLException {
+        return null;
+    }
 }
