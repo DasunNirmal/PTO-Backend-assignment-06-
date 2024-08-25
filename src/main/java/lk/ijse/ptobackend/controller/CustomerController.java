@@ -70,6 +70,14 @@ public class CustomerController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Get Details*/
+        if (req.getParameter("customerID") != null) {
+            searchCustomersByID(req, resp);
+        } else {
+            loadAllCustomers(req, resp);
+        }
+    }
+
+    private void loadAllCustomers(HttpServletRequest req, HttpServletResponse resp) {
         try (var writer = resp.getWriter()) {
             List<CustomerDTO> customerDTOList = customerBO.getAllCustomers(connection);
             if (customerDTOList != null) {
@@ -81,6 +89,18 @@ public class CustomerController extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void searchCustomersByID(HttpServletRequest req, HttpServletResponse resp) {
+        var customerID = req.getParameter("customerID");
+        try (var writer = resp.getWriter()){
+            CustomerDTO customer = customerBO.searchCustomerByID(customerID,connection);
+            var jsonb = JsonbBuilder.create();
+            resp.setContentType("application/json");
+            jsonb.toJson(customer,writer);
+        } catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
