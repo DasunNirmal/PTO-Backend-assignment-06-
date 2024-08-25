@@ -1,4 +1,7 @@
 package lk.ijse.ptobackend.dao.custom;
 
-public interface ItemDAO {
+import lk.ijse.ptobackend.dao.CrudDAO;
+import lk.ijse.ptobackend.entity.Item;
+
+public interface ItemDAO extends CrudDAO<Item> {
 }
