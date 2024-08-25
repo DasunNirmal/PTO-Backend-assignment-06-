@@ -1,12 +1,9 @@
 package lk.ijse.ptobackend.dao.custom.impl;
 
 import lk.ijse.ptobackend.dao.custom.CustomerDAO;
-import lk.ijse.ptobackend.dto.CustomerDTO;
 import lk.ijse.ptobackend.entity.Customer;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +14,7 @@ public class CustomerDAOImpl implements CustomerDAO {
     static String GET_ALL_CUSTOMERS = "SELECT * FROM Customer";
     static String DELETE_CUSTOMERS = "DELETE FROM Customer WHERE customerID = ?";
     static String UPDATE_CUSTOMERS = "UPDATE Customer SET customerName = ?, customerAddress = ?, customerPhoneNumber = ? WHERE customerID = ?";
+    static String SEARCH_CUSTOMERS = "SELECT * FROM Customer WHERE customerID = ?";
 
     @Override
     public boolean save(Customer customer, Connection connection) throws SQLException {
@@ -73,5 +71,22 @@ public class CustomerDAOImpl implements CustomerDAO {
         } catch (SQLException e) {
             throw new SQLException(e);
         }
+    }
+
+    @Override
+    public Customer search(String id, Connection connection) throws SQLException {
+        Customer customer = null;
+        var ps = connection.prepareStatement(SEARCH_CUSTOMERS);
+        ps.setString(1, id);
+        var rs = ps.executeQuery();
+        while (rs.next()) {
+            String customerID = rs.getString("customerID");
+            String customerName = rs.getString("customerName");
+            String customerAddress = rs.getString("customerAddress");
+            String customerPhoneNumber = rs.getString("customerPhoneNumber");
+
+            customer = new Customer(customerID, customerName, customerAddress, customerPhoneNumber);
+        }
+        return customer;
     }
 }
