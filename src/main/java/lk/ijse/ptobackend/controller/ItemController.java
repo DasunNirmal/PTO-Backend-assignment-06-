@@ -71,12 +71,28 @@ public class ItemController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Get Details*/
-        loadAllItems(req, resp);
+        if (req.getParameter("itemID") != null) {
+            searchItem(req, resp);
+        } else {
+            loadAllItems(req, resp);
+        }
+    }
+
+    private void searchItem(HttpServletRequest req, HttpServletResponse resp) {
+        var itemID = req.getParameter("itemID");
+        try (var writer = resp.getWriter()){
+            ItemDTO item = itemBO.searchItem(itemID,connection);
+            var jsonb = JsonbBuilder.create();
+            resp.setContentType("application/json");
+            jsonb.toJson(item,writer);
+        } catch (IOException | SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadAllItems(HttpServletRequest req, HttpServletResponse resp) {
         try (var writer = resp.getWriter()) {
-            List<ItemDTO> iteDTOList = itemBO.getAllCustomers(connection);
+            List<ItemDTO> iteDTOList = itemBO.getAllItems(connection);
             if (iteDTOList != null) {
                 resp.setContentType("application/json");
                 Jsonb jsonb = JsonbBuilder.create();
@@ -101,7 +117,7 @@ public class ItemController extends HttpServlet {
             var customerID = req.getParameter("itemID");
             Jsonb jsonb = JsonbBuilder.create();
             ItemDTO itemDTO = jsonb.fromJson(req.getReader(), ItemDTO.class);
-            boolean isUpdated = itemBO.updateCustomer(customerID, itemDTO, connection);
+            boolean isUpdated = itemBO.updateItem(customerID, itemDTO, connection);
             if (isUpdated) {
                 resp.getWriter().write("Item updated successfully");
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
@@ -116,6 +132,18 @@ public class ItemController extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Delete Details*/
-        super.doDelete(req, resp);
+        var itemID = req.getParameter("itemID");
+        try {
+            boolean isDeleted = itemBO.deleteItem(itemID,connection);
+            if (isDeleted) {
+                resp.getWriter().write("Item deleted successfully");
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
+                resp.getWriter().write("Item not deleted");
+                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
