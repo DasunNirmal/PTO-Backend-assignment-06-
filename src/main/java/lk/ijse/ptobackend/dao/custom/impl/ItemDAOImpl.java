@@ -4,8 +4,6 @@ import lk.ijse.ptobackend.dao.custom.ItemDAO;
 import lk.ijse.ptobackend.entity.Item;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +12,7 @@ public class ItemDAOImpl implements ItemDAO {
 
     static String SAVE_ITEMS = "INSERT INTO Items VALUES (?,?,?,?)";
     static String GET_ALL_ITEMS = "SELECT * FROM Items";
+    static String UPDATE_ITEMS = "UPDATE Items SET itemName = ?, itemPrice = ?, itemQty = ? WHERE itemID = ?";
 
     @Override
     public boolean save(Item item, Connection connection) throws SQLException {
@@ -48,8 +47,17 @@ public class ItemDAOImpl implements ItemDAO {
     }
 
     @Override
-    public boolean update(String id, Item dto, Connection connection) throws SQLException {
-        return false;
+    public boolean update(String id, Item item, Connection connection) throws SQLException {
+        try {
+            var ps = connection.prepareStatement(UPDATE_ITEMS);
+            ps.setString(1, item.getItemName());
+            ps.setDouble(2, item.getItemPrice());
+            ps.setInt(3, item.getItemQty());
+            ps.setString(4, item.getItemID());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
     }
 
     @Override
