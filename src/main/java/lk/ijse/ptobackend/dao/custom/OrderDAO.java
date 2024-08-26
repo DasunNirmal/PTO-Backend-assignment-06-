@@ -1,4 +1,8 @@
 package lk.ijse.ptobackend.dao.custom;
 
-public interface OrderDAO {
+import lk.ijse.ptobackend.dao.CrudDAO;
+import lk.ijse.ptobackend.dao.SuperDAO;
+import lk.ijse.ptobackend.entity.Order;
+
+public interface OrderDAO extends CrudDAO<Order> {
 }
