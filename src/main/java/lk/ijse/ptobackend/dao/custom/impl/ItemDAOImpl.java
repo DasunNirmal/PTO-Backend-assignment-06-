@@ -14,6 +14,7 @@ public class ItemDAOImpl implements ItemDAO {
     static String GET_ALL_ITEMS = "SELECT * FROM Items";
     static String DELETE_ITEMS = "DELETE FROM Items WHERE itemID = ?";
     static String UPDATE_ITEMS = "UPDATE Items SET itemName = ?, itemPrice = ?, itemQty = ? WHERE itemID = ?";
+    static String UPDATE_QTY = "UPDATE Items SET itemQty = itemQty - ? WHERE itemID = ?";
     static String SEARCH_ITEMS = "SELECT * FROM Items WHERE itemID = ?";
 
     @Override
@@ -88,5 +89,17 @@ public class ItemDAOImpl implements ItemDAO {
             item = new Item(itemID, itemName, itemPrice, itemQty);
         }
         return item;
+    }
+
+    @Override
+    public boolean updateQty(Item item, Connection connection) throws SQLException {
+        try {
+            var ps = connection.prepareStatement(UPDATE_QTY);
+            ps.setInt(1, item.getItemQty());
+            ps.setString(2, item.getItemID());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
     }
 }
