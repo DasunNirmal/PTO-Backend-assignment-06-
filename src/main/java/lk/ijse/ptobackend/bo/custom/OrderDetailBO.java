@@ -1,4 +1,6 @@
 package lk.ijse.ptobackend.bo.custom;
 
-public interface OrderDetailBO {
+import lk.ijse.ptobackend.bo.SuperBO;
+
+public interface OrderDetailBO extends SuperBO {
 }
