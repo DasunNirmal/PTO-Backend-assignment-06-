@@ -95,6 +95,8 @@ public class ItemDAOImpl implements ItemDAO {
     public boolean updateQty(Item item, Connection connection) throws SQLException {
         try {
             var ps = connection.prepareStatement(UPDATE_QTY);
+            System.out.println("Updating Item: ID = " + item.getItemID() + ", Order Quantity = " + item.getItemQty());
+
             ps.setInt(1, item.getItemQty());
             ps.setString(2, item.getItemID());
             return ps.executeUpdate() != 0;
