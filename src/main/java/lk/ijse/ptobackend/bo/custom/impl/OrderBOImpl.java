@@ -30,11 +30,11 @@ public class OrderBOImpl implements OrderBO {
 
             boolean isOrderSaved = orderDAO.save(new Order(combinedOrderDTO.getOrderID(),combinedOrderDTO.getOrderDate(),combinedOrderDTO.getCustomerID()),connection);
             if(isOrderSaved){
-                boolean isUpdated = itemDAO.updateQty(new Item(combinedOrderDTO.getItemID(),combinedOrderDTO.getItemName(),combinedOrderDTO.getItemPrice(),combinedOrderDTO.getItemQty()),connection);
-                if(isUpdated){
-                    boolean isOrderDetailsSaved = orderDetailDAO.save(new OrderDetails(combinedOrderDTO.getOrderID(), combinedOrderDTO.getItemID(), combinedOrderDTO.getItemName(),
-                            combinedOrderDTO.getItemPrice(), combinedOrderDTO.getItemQty(), combinedOrderDTO.getOrderQty(), combinedOrderDTO.getTotalPrice()),connection);
-                    if(!isOrderDetailsSaved){
+                boolean isOrderDetailsSaved = orderDetailDAO.save(new OrderDetails(combinedOrderDTO.getOrderID(), combinedOrderDTO.getItemID(), combinedOrderDTO.getItemName(),
+                        combinedOrderDTO.getItemPrice(), combinedOrderDTO.getItemQty(), combinedOrderDTO.getOrderQty(), combinedOrderDTO.getTotalPrice()),connection);
+                if(isOrderDetailsSaved){
+                    boolean isUpdated = itemDAO.updateQty(new Item(combinedOrderDTO.getItemID(),combinedOrderDTO.getItemName(),combinedOrderDTO.getItemPrice(),combinedOrderDTO.getOrderQty()),connection);
+                    if(!isUpdated){
                         return false;
                     }
                 } else {
