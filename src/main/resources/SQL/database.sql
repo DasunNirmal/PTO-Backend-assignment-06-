@@ -11,3 +11,22 @@ CREATE TABLE Items (
                        itemPrice decimal(10, 2),
                        itemQty int
 );
+
+CREATE TABLE Orders (
+                        orderID varchar(15) primary key,
+                        orderDate varchar(12),
+                        customerID varchar(15),
+                        foreign key (customerID) references Customer(customerID) on update cascade on delete cascade
+);
+
+CREATE TABLE OrderDetails (
+                              orderID varchar(15),
+                              itemID varchar(15),
+                              itemName varchar(25),
+                              itemPrice decimal(10, 2),
+                              itemQty int,
+                              orderQty int,
+                              totalPrice decimal(10, 2),
+                              foreign key (orderID) references Orders(orderID) on update cascade on delete cascade,
+                              foreign key (itemID) references Items(itemID) on update cascade on delete cascade
+);
