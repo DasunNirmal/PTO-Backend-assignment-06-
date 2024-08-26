@@ -14,9 +14,6 @@ import lk.ijse.ptobackend.bo.custom.ItemBO;
 import lk.ijse.ptobackend.bo.custom.OrderBO;
 import lk.ijse.ptobackend.bo.custom.OrderDetailBO;
 import lk.ijse.ptobackend.dto.CombinedOrderDTO;
-import lk.ijse.ptobackend.dto.ItemDTO;
-import lk.ijse.ptobackend.dto.OrderDTO;
-import lk.ijse.ptobackend.dto.OrderDetailsDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
