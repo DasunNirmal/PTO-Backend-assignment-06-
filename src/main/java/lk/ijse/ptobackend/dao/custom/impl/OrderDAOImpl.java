@@ -10,7 +10,7 @@ import java.util.List;
 public class OrderDAOImpl implements OrderDAO {
 
     static String SAVE_ORDERS = "INSERT INTO Orders VALUES (?,?,?)";
-    static String DELETE_ORDERS = "DELETE FROM Orders WHERE OrderID=?";
+    static String DELETE_ORDERS = "DELETE FROM Orders WHERE OrderID = ?";
 
     @Override
     public boolean save(Order order, Connection connection) throws SQLException {
