@@ -1,4 +1,4 @@
-package lk.ijse.ptobackend.dto;
+package lk.ijse.ptobackend.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CombinedOrderDTO {
+public class CombinedOrder {
     private String orderID;
     private String orderDate;
     private String customerID;
