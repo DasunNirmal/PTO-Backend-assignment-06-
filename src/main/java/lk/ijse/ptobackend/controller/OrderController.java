@@ -11,12 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lk.ijse.ptobackend.bo.BOFactory;
 import lk.ijse.ptobackend.bo.custom.CombinedOrderBO;
-import lk.ijse.ptobackend.bo.custom.ItemBO;
 import lk.ijse.ptobackend.bo.custom.OrderBO;
-import lk.ijse.ptobackend.bo.custom.OrderDetailBO;
 import lk.ijse.ptobackend.dto.CombinedOrderDTO;
-import lk.ijse.ptobackend.dto.CustomerDTO;
-import lk.ijse.ptobackend.dto.OrderDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +30,6 @@ public class OrderController extends HttpServlet {
     private Connection connection;
     static Logger logger = LoggerFactory.getLogger(OrderController.class);
     OrderBO orderBO = (OrderBO) BOFactory.getBoFactory().getBO(BOFactory.BOTypes.ORDERS);
-    OrderDetailBO orderDetailBO = (OrderDetailBO) BOFactory.getBoFactory().getBO(BOFactory.BOTypes.ORDER_DETAILS);
-    ItemBO itemBO = (ItemBO) BOFactory.getBoFactory().getBO(BOFactory.BOTypes.ITEMS);
     CombinedOrderBO combinedOrderBO = (CombinedOrderBO) BOFactory.getBoFactory().getBO(BOFactory.BOTypes.COMBINED_ORDER);
 
     @Override
@@ -78,7 +72,23 @@ public class OrderController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Get Details*/
-        loadAllOrders(req, resp);
+        if (req.getParameter("orderID") != null) {
+            searchOrdersByID(req, resp);
+        } else {
+            loadAllOrders(req, resp);
+        }
+    }
+
+    private void searchOrdersByID(HttpServletRequest req, HttpServletResponse resp) {
+        var orderID = req.getParameter("orderID");
+        try (var writer = resp.getWriter()){
+            CombinedOrderDTO combinedOrder = combinedOrderBO.searchOrdersByID(orderID,connection);
+            var jsonb = JsonbBuilder.create();
+            resp.setContentType("application/json");
+            jsonb.toJson(combinedOrder,writer);
+        } catch (IOException | SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadAllOrders(HttpServletRequest req, HttpServletResponse resp) {
@@ -100,12 +110,61 @@ public class OrderController extends HttpServlet {
     @Override
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Update Details*/
-        super.doPatch(req, resp);
+
+        if (!"application/json".equalsIgnoreCase(req.getContentType())) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Content Type");
+            return;
+        }
+
+        Jsonb jsonb = JsonbBuilder.create();
+        CombinedOrderDTO combinedOrderDTO = null;
+        String orderID = null;
+        String itemID = null;
+        String qtyOnHand = null;
+
+        try {
+            combinedOrderDTO = jsonb.fromJson(req.getReader(), CombinedOrderDTO.class);
+
+            // Retrieve parameters from the request URL or body if needed
+            orderID = req.getParameter("orderID");
+            itemID = req.getParameter("itemID");
+            qtyOnHand = req.getParameter("qtyOnHand");
+
+
+            boolean isUpdated = combinedOrderBO.updateOrders(orderID, itemID, qtyOnHand, combinedOrderDTO, connection);
+
+            if (isUpdated) {
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                resp.getWriter().write("Order updated successfully");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().write("Order update failed");
+            }
+        } catch (JsonbException | SQLException e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("Error processing request");
+            e.printStackTrace();
+        }
     }
+
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Delete Details*/
-        super.doDelete(req, resp);
+
+        var orderID = req.getParameter("orderID");
+        var itemID = req.getParameter("itemID");
+        var orderQty = req.getParameter("orderQty");
+        try {
+            boolean isDeleted = orderBO.deleteOrder(orderID,itemID,orderQty,connection);
+            if (isDeleted) {
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                resp.getWriter().write("Order deleted successfully");
+            } else {
+                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
