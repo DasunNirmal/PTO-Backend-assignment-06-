@@ -6,9 +6,7 @@ import lk.ijse.ptobackend.dao.custom.ItemDAO;
 import lk.ijse.ptobackend.dao.custom.OrderDAO;
 import lk.ijse.ptobackend.dao.custom.OrderDetailDAO;
 import lk.ijse.ptobackend.dto.CombinedOrderDTO;
-import lk.ijse.ptobackend.dto.ItemDTO;
 import lk.ijse.ptobackend.dto.OrderDTO;
-import lk.ijse.ptobackend.dto.OrderDetailsDTO;
 import lk.ijse.ptobackend.entity.Item;
 import lk.ijse.ptobackend.entity.Order;
 import lk.ijse.ptobackend.entity.OrderDetails;
@@ -47,5 +45,4 @@ public class OrderBOImpl implements OrderBO {
             throw new RuntimeException(e);
         }
     }
-
 }
