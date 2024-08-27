@@ -1,9 +1,6 @@
 package lk.ijse.ptobackend.bo;
 
-import lk.ijse.ptobackend.bo.custom.impl.CustomerBOImpl;
-import lk.ijse.ptobackend.bo.custom.impl.ItemBOImpl;
-import lk.ijse.ptobackend.bo.custom.impl.OrderBOImpl;
-import lk.ijse.ptobackend.bo.custom.impl.OrderDetailBOImpl;
+import lk.ijse.ptobackend.bo.custom.impl.*;
 
 public class BOFactory {
 
@@ -15,7 +12,7 @@ public class BOFactory {
     }
 
     public enum BOTypes {
-        CUSTOMERS,ITEMS,ORDERS,ORDER_DETAILS
+        CUSTOMERS,ITEMS,ORDERS,ORDER_DETAILS,COMBINED_ORDER
     }
 
     public SuperBO getBO(BOTypes boType) {
@@ -28,6 +25,8 @@ public class BOFactory {
                     return new OrderBOImpl();
                     case ORDER_DETAILS:
                         return new OrderDetailBOImpl();
+                        case COMBINED_ORDER:
+                            return new CombinedOrderBOImpl();
                 default: return null;
         }
     }
