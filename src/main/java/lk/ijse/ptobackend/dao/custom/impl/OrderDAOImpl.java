@@ -1,7 +1,6 @@
 package lk.ijse.ptobackend.dao.custom.impl;
 
 import lk.ijse.ptobackend.dao.custom.OrderDAO;
-import lk.ijse.ptobackend.entity.CombinedOrder;
 import lk.ijse.ptobackend.entity.Order;
 
 import java.sql.Connection;
@@ -11,6 +10,7 @@ import java.util.List;
 public class OrderDAOImpl implements OrderDAO {
 
     static String SAVE_ORDERS = "INSERT INTO Orders VALUES (?,?,?)";
+    static String DELETE_ORDERS = "DELETE FROM Orders WHERE OrderID=?";
 
     @Override
     public boolean save(Order order, Connection connection) throws SQLException {
@@ -38,7 +38,13 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public boolean delete(String id, Connection connection) throws SQLException {
-        return false;
+        try {
+            var ps = connection.prepareStatement(DELETE_ORDERS);
+            ps.setString(1, id);
+            return ps.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
     }
 
     @Override
