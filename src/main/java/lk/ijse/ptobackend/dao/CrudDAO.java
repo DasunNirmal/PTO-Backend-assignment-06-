@@ -1,6 +1,6 @@
 package lk.ijse.ptobackend.dao;
 
-import lk.ijse.ptobackend.entity.Customer;
+import lk.ijse.ptobackend.entity.CombinedOrder;
 
 import java.sql.Connection;
 import java.sql.SQLException;
