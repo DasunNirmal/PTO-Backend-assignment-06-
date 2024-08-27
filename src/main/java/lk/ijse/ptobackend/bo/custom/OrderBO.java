@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface OrderBO extends SuperBO {
     boolean saveOrder(CombinedOrderDTO combinedOrderDTO, Connection connection) throws SQLException;
+
+    boolean deleteOrder(String orderID, String itemID, String orderQty, Connection connection) throws SQLException;
 }
