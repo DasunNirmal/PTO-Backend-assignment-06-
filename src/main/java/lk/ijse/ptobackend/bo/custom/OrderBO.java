@@ -5,6 +5,7 @@ import lk.ijse.ptobackend.dto.CombinedOrderDTO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public interface OrderBO extends SuperBO {
     boolean saveOrder(CombinedOrderDTO combinedOrderDTO, Connection connection) throws SQLException;
