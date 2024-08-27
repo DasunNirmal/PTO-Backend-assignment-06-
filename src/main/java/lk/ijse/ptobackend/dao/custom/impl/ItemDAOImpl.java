@@ -15,6 +15,8 @@ public class ItemDAOImpl implements ItemDAO {
     static String DELETE_ITEMS = "DELETE FROM Items WHERE itemID = ?";
     static String UPDATE_ITEMS = "UPDATE Items SET itemName = ?, itemPrice = ?, itemQty = ? WHERE itemID = ?";
     static String UPDATE_QTY = "UPDATE Items SET itemQty = itemQty - ? WHERE itemID = ?";
+    static String UPDATE_QTY_DELETED = "UPDATE Items SET itemQty = itemQty + ? WHERE itemID = ?";
+    static String UPDATE_QTY_ON_HAND = "UPDATE Items SET itemQty = ? WHERE itemID = ?";
     static String SEARCH_ITEMS = "SELECT * FROM Items WHERE itemID = ?";
 
     @Override
@@ -95,10 +97,35 @@ public class ItemDAOImpl implements ItemDAO {
     public boolean updateQty(Item item, Connection connection) throws SQLException {
         try {
             var ps = connection.prepareStatement(UPDATE_QTY);
-            System.out.println("Updating Item: ID = " + item.getItemID() + ", Order Quantity = " + item.getItemQty());
 
             ps.setInt(1, item.getItemQty());
             ps.setString(2, item.getItemID());
+            return ps.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+    }
+
+    @Override
+    public boolean updateQtyDeleted(String itemID, String orderQty, Connection connection) throws SQLException {
+        try {
+            var ps = connection.prepareStatement(UPDATE_QTY_DELETED);
+
+            ps.setInt(1, Integer.parseInt(orderQty));
+            ps.setString(2, itemID);
+            return ps.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+    }
+
+    @Override
+    public boolean updateQtyOnHand(String itemID, String qtyOnHand, Connection connection) throws SQLException {
+        try {
+            var ps = connection.prepareStatement(UPDATE_QTY_ON_HAND);
+
+            ps.setInt(1, Integer.parseInt(qtyOnHand));
+            ps.setString(2, itemID);
             return ps.executeUpdate() != 0;
         } catch (SQLException e) {
             throw new SQLException(e);
