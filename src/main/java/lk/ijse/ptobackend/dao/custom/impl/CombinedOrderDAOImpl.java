@@ -14,6 +14,12 @@ public class CombinedOrderDAOImpl implements CombinedOrderDAO {
             "FROM OrderDetails od\n" +
             "JOIN Orders o ON od.orderID = o.orderID\n" +
             "ORDER BY od.orderID ASC";
+    static String SEARCH_ORDERS = "SELECT od.orderID, od.itemID, od.itemName, od.itemPrice, od.itemQty, od.orderQty, o.orderDate, o.customerID, od.totalPrice " +
+            "FROM OrderDetails od " +
+            "JOIN Orders o ON od.orderID = o.orderID " +
+            "WHERE od.orderID = ? " +
+            "ORDER BY od.orderID ASC";
+    static String UPDATE_ORDERS = "UPDATE OrderDetails SET itemID = ?, itemName = ?, itemPrice = ?, itemQty = ?, orderQty = ?, totalPrice = ? WHERE orderID = ?";
 
     @Override
     public boolean save(CombinedOrder dto, Connection connection) throws SQLException {
@@ -44,7 +50,19 @@ public class CombinedOrderDAOImpl implements CombinedOrderDAO {
 
     @Override
     public boolean update(String id, CombinedOrder dto, Connection connection) throws SQLException {
-        return false;
+        try {
+            var ps = connection.prepareStatement(UPDATE_ORDERS);
+            ps.setString(1, dto.getItemID());
+            ps.setString(2, dto.getItemName());
+            ps.setDouble(3, dto.getItemPrice());
+            ps.setInt(4, dto.getItemQty());
+            ps.setInt(5, dto.getOrderQty());
+            ps.setDouble(6, dto.getTotalPrice());
+            ps.setString(7, id);
+            return ps.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
     }
 
     @Override
@@ -54,6 +72,23 @@ public class CombinedOrderDAOImpl implements CombinedOrderDAO {
 
     @Override
     public CombinedOrder search(String id, Connection connection) throws SQLException {
-        return null;
+        CombinedOrder combinedOrder = null;
+        var ps = connection.prepareStatement(SEARCH_ORDERS);
+        ps.setString(1, id);
+        var rs = ps.executeQuery();
+        while (rs.next()) {
+            String orderID = rs.getString("orderID");
+            String orderDate = rs.getString("orderDate");
+            String customerID = rs.getString("customerID");
+            String itemID = rs.getString("itemID");
+            String itemName = rs.getString("itemName");
+            double itemPrice = rs.getDouble("itemPrice");
+            int itemQty = rs.getInt("itemQty");
+            int orderQty = rs.getInt("orderQty");
+            int totalPrice = rs.getInt("totalPrice");
+
+            combinedOrder = new CombinedOrder(orderID,orderDate,customerID,itemID,itemName,itemPrice,itemQty,orderQty,totalPrice);
+        }
+        return combinedOrder;
     }
 }
