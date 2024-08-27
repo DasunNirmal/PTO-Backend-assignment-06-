@@ -47,17 +47,30 @@ public class OrderBOImpl implements OrderBO {
 
     @Override
     public boolean deleteOrder(String orderID, String itemID, String orderQty, Connection connection) throws SQLException {
-        boolean isDeleted = orderDAO.delete(orderID, connection);
-        if (isDeleted) {
-            boolean isUpdated = itemDAO.updateQtyDeleted(itemID, orderQty, connection);
-            if (isUpdated) {
-                return true;
+        boolean isDeleted = false;
+        boolean isUpdated = false;
+        try {
+            connection.setAutoCommit(false); // Start transaction
+
+            // Attempt to delete the order
+            isDeleted = orderDAO.delete(orderID, connection);
+            if (isDeleted) {
+                // Attempt to update the item quantity
+                isUpdated = itemDAO.updateQtyDeleted(itemID, orderQty, connection);
+                if (isUpdated) {
+                    connection.commit(); // Commit transaction if both operations succeed
+                    return true;
+                } else {
+                    connection.rollback(); // Rollback transaction if updating quantity fails
+                    return false;
+                }
             } else {
-                // If updating the quantity fails, roll back the deletion.
-                connection.rollback(); // Optional: Rollback if the update fails
+                connection.rollback(); // Rollback transaction if deleting the order fails
                 return false;
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete order", e);
         }
-        return false; // Deletion failed
     }
+
 }
