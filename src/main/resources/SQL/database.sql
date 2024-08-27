@@ -30,3 +30,8 @@ CREATE TABLE OrderDetails (
                               foreign key (orderID) references Orders(orderID) on update cascade on delete cascade,
                               foreign key (itemID) references Items(itemID) on update cascade on delete cascade
 );
+
+SELECT od.orderID,od.itemID,od.itemName,od.itemPrice,od.itemQty,od.orderQty,o.orderDate,o.customerID,od.totalPrice
+FROM OrderDetails od
+JOIN Orders o ON od.orderID = o.orderID
+ORDER BY od.orderID ASC;
