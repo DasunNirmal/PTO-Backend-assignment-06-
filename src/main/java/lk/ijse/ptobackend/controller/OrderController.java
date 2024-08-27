@@ -10,10 +10,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lk.ijse.ptobackend.bo.BOFactory;
+import lk.ijse.ptobackend.bo.custom.CombinedOrderBO;
 import lk.ijse.ptobackend.bo.custom.ItemBO;
 import lk.ijse.ptobackend.bo.custom.OrderBO;
 import lk.ijse.ptobackend.bo.custom.OrderDetailBO;
 import lk.ijse.ptobackend.dto.CombinedOrderDTO;
+import lk.ijse.ptobackend.dto.CustomerDTO;
+import lk.ijse.ptobackend.dto.OrderDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +26,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet(urlPatterns = "/orderController")
 public class OrderController extends HttpServlet {
@@ -32,6 +36,7 @@ public class OrderController extends HttpServlet {
     OrderBO orderBO = (OrderBO) BOFactory.getBoFactory().getBO(BOFactory.BOTypes.ORDERS);
     OrderDetailBO orderDetailBO = (OrderDetailBO) BOFactory.getBoFactory().getBO(BOFactory.BOTypes.ORDER_DETAILS);
     ItemBO itemBO = (ItemBO) BOFactory.getBoFactory().getBO(BOFactory.BOTypes.ITEMS);
+    CombinedOrderBO combinedOrderBO = (CombinedOrderBO) BOFactory.getBoFactory().getBO(BOFactory.BOTypes.COMBINED_ORDER);
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -73,7 +78,23 @@ public class OrderController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Get Details*/
-        super.doGet(req, resp);
+        loadAllOrders(req, resp);
+    }
+
+    private void loadAllOrders(HttpServletRequest req, HttpServletResponse resp) {
+        try (var writer = resp.getWriter()) {
+            List<CombinedOrderDTO> combinedOrderDTOS = combinedOrderBO.getAllOrders(connection);
+            if (combinedOrderDTOS != null) {
+                resp.setContentType("application/json");
+                Jsonb jsonb = JsonbBuilder.create();
+                jsonb.toJson(combinedOrderDTOS, writer);
+            } else {
+                writer.write("No customers found");
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
