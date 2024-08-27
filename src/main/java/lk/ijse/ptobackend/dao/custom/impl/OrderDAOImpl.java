@@ -1,6 +1,7 @@
 package lk.ijse.ptobackend.dao.custom.impl;
 
 import lk.ijse.ptobackend.dao.custom.OrderDAO;
+import lk.ijse.ptobackend.entity.CombinedOrder;
 import lk.ijse.ptobackend.entity.Order;
 
 import java.sql.Connection;
