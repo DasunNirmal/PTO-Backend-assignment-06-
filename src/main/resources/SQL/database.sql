@@ -35,3 +35,9 @@ SELECT od.orderID,od.itemID,od.itemName,od.itemPrice,od.itemQty,od.orderQty,o.or
 FROM OrderDetails od
 JOIN Orders o ON od.orderID = o.orderID
 ORDER BY od.orderID ASC;
+
+"SELECT od.orderID, od.itemID, od.itemName, od.itemPrice, od.itemQty, od.orderQty, o.orderDate, o.customerID, od.totalPrice " +
+                                "FROM OrderDetails od " +
+                                "JOIN Orders o ON od.orderID = o.orderID " +
+                                "WHERE od.orderID = ? " +
+                                "ORDER BY od.orderID ASC"
