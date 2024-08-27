@@ -6,7 +6,6 @@ import lk.ijse.ptobackend.dao.custom.ItemDAO;
 import lk.ijse.ptobackend.dao.custom.OrderDAO;
 import lk.ijse.ptobackend.dao.custom.OrderDetailDAO;
 import lk.ijse.ptobackend.dto.CombinedOrderDTO;
-import lk.ijse.ptobackend.dto.OrderDTO;
 import lk.ijse.ptobackend.entity.Item;
 import lk.ijse.ptobackend.entity.Order;
 import lk.ijse.ptobackend.entity.OrderDetails;
@@ -44,5 +43,21 @@ public class OrderBOImpl implements OrderBO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean deleteOrder(String orderID, String itemID, String orderQty, Connection connection) throws SQLException {
+        boolean isDeleted = orderDAO.delete(orderID, connection);
+        if (isDeleted) {
+            boolean isUpdated = itemDAO.updateQtyDeleted(itemID, orderQty, connection);
+            if (isUpdated) {
+                return true;
+            } else {
+                // If updating the quantity fails, roll back the deletion.
+                connection.rollback(); // Optional: Rollback if the update fails
+                return false;
+            }
+        }
+        return false; // Deletion failed
     }
 }
