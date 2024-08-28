@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lk.ijse.ptobackend.bo.BOFactory;
 import lk.ijse.ptobackend.bo.custom.ItemBO;
-import lk.ijse.ptobackend.dto.CustomerDTO;
 import lk.ijse.ptobackend.dto.ItemDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +45,7 @@ public class ItemController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Save Details*/
+        logger.info("POST Request Received");
         if (!req.getContentType().toLowerCase().startsWith("application/json") || req.getContentType() == null) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -56,9 +56,11 @@ public class ItemController extends HttpServlet {
 
             boolean iSaved = itemBO.saveItem(itemDTO, connection);
             if (iSaved) {
+                logger.info("Item Saved Successfully");
                 writer.write("Item saved successfully");
                 resp.setStatus(HttpServletResponse.SC_CREATED);
             } else {
+                logger.info("Something went wrong Item did not saved successfully");
                 writer.write(" Something went wrong Item did not saved successfully");
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
             }
@@ -72,8 +74,10 @@ public class ItemController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Get Details*/
         if (req.getParameter("itemID") != null) {
+            logger.info("GET Request With the Item ID");
             searchItem(req, resp);
         } else {
+            logger.info("GET Request Without the Item ID");
             loadAllItems(req, resp);
         }
     }
@@ -85,6 +89,7 @@ public class ItemController extends HttpServlet {
             var jsonb = JsonbBuilder.create();
             resp.setContentType("application/json");
             jsonb.toJson(item,writer);
+            logger.info("Get Items by ID is Successful");
         } catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
@@ -94,6 +99,7 @@ public class ItemController extends HttpServlet {
         try (var writer = resp.getWriter()) {
             List<ItemDTO> iteDTOList = itemBO.getAllItems(connection);
             if (iteDTOList != null) {
+                logger.info("Get All Items Successfully");
                 resp.setContentType("application/json");
                 Jsonb jsonb = JsonbBuilder.create();
                 jsonb.toJson(iteDTOList, writer);
@@ -109,6 +115,7 @@ public class ItemController extends HttpServlet {
     @Override
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Update Details*/
+        logger.info("PATCH Request Received");
         if (!req.getContentType().toLowerCase().startsWith("application/json") || req.getContentType() == null) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -119,6 +126,7 @@ public class ItemController extends HttpServlet {
             ItemDTO itemDTO = jsonb.fromJson(req.getReader(), ItemDTO.class);
             boolean isUpdated = itemBO.updateItem(customerID, itemDTO, connection);
             if (isUpdated) {
+                logger.info("Items updated successfully");
                 resp.getWriter().write("Item updated successfully");
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
@@ -132,10 +140,12 @@ public class ItemController extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Delete Details*/
+        logger.info("DELETE Request Received");
         var itemID = req.getParameter("itemID");
         try {
             boolean isDeleted = itemBO.deleteItem(itemID,connection);
             if (isDeleted) {
+                logger.info("Item deleted successfully");
                 resp.getWriter().write("Item deleted successfully");
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
