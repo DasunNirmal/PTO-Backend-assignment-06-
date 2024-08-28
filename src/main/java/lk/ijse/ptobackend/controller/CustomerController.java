@@ -45,6 +45,7 @@ public class CustomerController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Save Details*/
+        logger.info("Post Request Received");
         if (!req.getContentType().toLowerCase().startsWith("application/json") || req.getContentType() == null) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -55,9 +56,11 @@ public class CustomerController extends HttpServlet {
 
             boolean iSaved = customerBO.saveCustomer(customerDTO, connection);
             if (iSaved) {
+                logger.info("Customer Saved Successfully");
                 writer.write("Customer saved successfully");
                 resp.setStatus(HttpServletResponse.SC_CREATED);
             } else {
+                logger.info("Something went wrong Customer did not saved successfully");
                 writer.write(" Something went wrong Customer did not saved successfully");
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
             }
@@ -71,8 +74,10 @@ public class CustomerController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Get Details*/
         if (req.getParameter("customerID") != null) {
+            logger.info("GET Request With the Customer ID");
             searchCustomersByID(req, resp);
         } else {
+            logger.info("GET Request Without the Customer ID");
             loadAllCustomers(req, resp);
         }
     }
@@ -81,6 +86,7 @@ public class CustomerController extends HttpServlet {
         try (var writer = resp.getWriter()) {
             List<CustomerDTO> customerDTOList = customerBO.getAllCustomers(connection);
             if (customerDTOList != null) {
+                logger.info("Get All Customers Successfully");
                 resp.setContentType("application/json");
                 Jsonb jsonb = JsonbBuilder.create();
                 jsonb.toJson(customerDTOList, writer);
@@ -100,6 +106,7 @@ public class CustomerController extends HttpServlet {
             var jsonb = JsonbBuilder.create();
             resp.setContentType("application/json");
             jsonb.toJson(customer,writer);
+            logger.info("Get Customers by ID is Successful");
         } catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
@@ -108,7 +115,7 @@ public class CustomerController extends HttpServlet {
     @Override
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Update Details*/
-
+        logger.info("PATCH Request Received");
         if (!req.getContentType().toLowerCase().startsWith("application/json") || req.getContentType() == null) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -119,6 +126,7 @@ public class CustomerController extends HttpServlet {
             CustomerDTO customerDTO = jsonb.fromJson(req.getReader(), CustomerDTO.class);
             boolean isUpdated = customerBO.updateCustomer(customerID, customerDTO, connection);
             if (isUpdated) {
+                logger.info("Customer updated successfully");
                 resp.getWriter().write("Customer updated successfully");
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
@@ -132,11 +140,12 @@ public class CustomerController extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Delete Details*/
-
+        logger.info("DELETE Request Received");
         var customerID = req.getParameter("customerID");
         try {
             boolean isDeleted = customerBO.deleteCustomer(customerID,connection);
             if (isDeleted) {
+                logger.info("Customer deleted successfully");
                 resp.getWriter().write("Customer deleted successfully");
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
