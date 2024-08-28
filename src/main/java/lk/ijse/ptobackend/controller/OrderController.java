@@ -47,6 +47,7 @@ public class OrderController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Save Details*/
+        logger.info("POST Request Received");
         if (!req.getContentType().toLowerCase().startsWith("application/json") || req.getContentType() == null) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -57,9 +58,11 @@ public class OrderController extends HttpServlet {
 
             boolean iSaved = orderBO.saveOrder(combinedOrderDTO, connection);
             if (iSaved) {
+                logger.info("Order Saved Successfully");
                 writer.write("Order saved successfully");
                 resp.setStatus(HttpServletResponse.SC_CREATED);
             } else {
+                logger.info("Something went wrong Order did not saved successfully");
                 writer.write(" Something went wrong Order did not saved successfully");
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
             }
@@ -73,8 +76,10 @@ public class OrderController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Get Details*/
         if (req.getParameter("orderID") != null) {
+            logger.info("GET Request With the Order ID");
             searchOrdersByID(req, resp);
         } else {
+            logger.info("GET Request Without the Order ID");
             loadAllOrders(req, resp);
         }
     }
@@ -86,6 +91,7 @@ public class OrderController extends HttpServlet {
             var jsonb = JsonbBuilder.create();
             resp.setContentType("application/json");
             jsonb.toJson(combinedOrder,writer);
+            logger.info("Get Orders by ID is Successful");
         } catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
@@ -95,6 +101,7 @@ public class OrderController extends HttpServlet {
         try (var writer = resp.getWriter()) {
             List<CombinedOrderDTO> combinedOrderDTOS = combinedOrderBO.getAllOrders(connection);
             if (combinedOrderDTOS != null) {
+                logger.info("Get All Orders Successfully");
                 resp.setContentType("application/json");
                 Jsonb jsonb = JsonbBuilder.create();
                 jsonb.toJson(combinedOrderDTOS, writer);
@@ -110,7 +117,7 @@ public class OrderController extends HttpServlet {
     @Override
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Update Details*/
-
+        logger.info("PATCH Request Received");
         if (!"application/json".equalsIgnoreCase(req.getContentType())) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Content Type");
             return;
@@ -134,9 +141,11 @@ public class OrderController extends HttpServlet {
             boolean isUpdated = combinedOrderBO.updateOrders(orderID, itemID, qtyOnHand, combinedOrderDTO, connection);
 
             if (isUpdated) {
+                logger.info("Order updated successfully");
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 resp.getWriter().write("Order updated successfully");
             } else {
+                logger.info("Order update failed");
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 resp.getWriter().write("Order update failed");
             }
@@ -151,13 +160,14 @@ public class OrderController extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         /*Todo: Delete Details*/
-
+        logger.info("DELETE Request Received");
         var orderID = req.getParameter("orderID");
         var itemID = req.getParameter("itemID");
         var orderQty = req.getParameter("orderQty");
         try {
             boolean isDeleted = orderBO.deleteOrder(orderID,itemID,orderQty,connection);
             if (isDeleted) {
+                logger.info("Order deleted successfully");
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 resp.getWriter().write("Order deleted successfully");
             } else {
