@@ -76,9 +76,25 @@ public class CustomerController extends HttpServlet {
         if (req.getParameter("customerID") != null) {
             logger.info("GET Request With the Customer ID");
             searchCustomersByID(req, resp);
+        } else if (req.getParameter("customerPhoneNumber") != null) {
+            logger.info("GET Request With the Customer Phone Number");
+            searchCustomersByPhoneNumber(req, resp);
         } else {
             logger.info("GET Request Without the Customer ID");
             loadAllCustomers(req, resp);
+        }
+    }
+
+    private void searchCustomersByPhoneNumber(HttpServletRequest req, HttpServletResponse resp) {
+        var customerPhoneNumber = req.getParameter("customerPhoneNumber");
+        try (var writer = resp.getWriter()){
+            CustomerDTO customer = customerBO.searchCustomerByPhoneNumber(customerPhoneNumber,connection);
+            var jsonb = JsonbBuilder.create();
+            resp.setContentType("application/json");
+            jsonb.toJson(customer,writer);
+            logger.info("Get Customers by Phone Number is Successful");
+        } catch (IOException | SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
