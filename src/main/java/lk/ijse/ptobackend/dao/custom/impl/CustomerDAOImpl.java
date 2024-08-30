@@ -15,6 +15,7 @@ public class CustomerDAOImpl implements CustomerDAO {
     static String DELETE_CUSTOMERS = "DELETE FROM Customer WHERE customerID = ?";
     static String UPDATE_CUSTOMERS = "UPDATE Customer SET customerName = ?, customerAddress = ?, customerPhoneNumber = ? WHERE customerID = ?";
     static String SEARCH_CUSTOMERS = "SELECT * FROM Customer WHERE customerID = ?";
+    static String SEARCH_CUSTOMERS_BY_PHONE = "SELECT * FROM Customer WHERE customerPhoneNumber = ?";
 
     @Override
     public boolean save(Customer customer, Connection connection) throws SQLException {
@@ -86,6 +87,23 @@ public class CustomerDAOImpl implements CustomerDAO {
             String customerPhoneNumber = rs.getString("customerPhoneNumber");
 
             customer = new Customer(customerID, customerName, customerAddress, customerPhoneNumber);
+        }
+        return customer;
+    }
+
+    @Override
+    public Customer searchByPhone(String customerPhoneNumber, Connection connection) throws SQLException {
+        Customer customer = null;
+        var ps = connection.prepareStatement(SEARCH_CUSTOMERS_BY_PHONE);
+        ps.setString(1, customerPhoneNumber);
+        var rs = ps.executeQuery();
+        while (rs.next()) {
+            String customerID = rs.getString("customerID");
+            String customerName = rs.getString("customerName");
+            String customerAddress = rs.getString("customerAddress");
+            String customerPhoneNumbers = rs.getString("customerPhoneNumber");
+
+            customer = new Customer(customerID, customerName, customerAddress, customerPhoneNumbers);
         }
         return customer;
     }
