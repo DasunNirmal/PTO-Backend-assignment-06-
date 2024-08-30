@@ -50,4 +50,14 @@ public class CustomerBOImpl implements CustomerBO {
             return null;
         }
     }
+
+    @Override
+    public CustomerDTO searchCustomerByPhoneNumber(String customerPhoneNumber, Connection connection) throws SQLException {
+        Customer customer = customerDAO.searchByPhone(customerPhoneNumber,connection);
+        if (customer != null) {
+            return new CustomerDTO(customer.getCustomerID(), customer.getCustomerName(), customer.getCustomerAddress(), customer.getCustomerPhoneNumber());
+        } else {
+            return null;
+        }
+    }
 }
